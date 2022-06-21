@@ -27,8 +27,8 @@ namespace AdvancedRestrictor
         public bool DebugMode { get; set; }
         public void LoadDefaults()
         {
-            WarningMessageCooldown = 5f;
-            IgnoreAdmins = false;
+            WarningMessageCooldown = 2f;
+            IgnoreAdmins = false; // True - Admins Bypass | False - Admins act like players
             PreventPickup = false;
             RestrictCraftingGlobal = false;
             RestrictedItems = new List<ItemRestrict>()
@@ -97,7 +97,7 @@ namespace AdvancedRestrictor
                     }
                 },
             };
-            DebugMode = false;
+            DebugMode = true;
         }
     }
 }
