@@ -80,9 +80,7 @@ namespace AdvancedRestrictor
                     }
                     shouldAllow = false;
                     string itemName = Assets.find(EAssetType.ITEM, itemID)?.FriendlyName;
-                    Logger.Log("11");
                     StartCoroutine(sendRestrictionMessage(player, "CraftingBlacklist", itemName, Restriction.BypassPermission));
-                    Logger.Log("12");
                     if (AdvancedRestrictor.Instance.Configuration.Instance.DebugMode)
                     {
                         Logger.Log("DEBUG >> Crafting Prevented " + itemName + " from " + player.CharacterName + "!");
@@ -259,27 +257,18 @@ namespace AdvancedRestrictor
         }
         public IEnumerator sendRestrictionMessage(UnturnedPlayer player, string key, params object[] placeholder)
         {
-            Logger.Log("1");
             if (Cooldowns.Contains(player.CSteamID))
             {
-                Logger.Log("2");
                 if (AdvancedRestrictor.Instance.Configuration.Instance.DebugMode)
                 {
-                    Logger.Log("3");
                     Logger.Log("DEBUG >> " + player.CharacterName + " Triggered a Event however is on Cooldown!");
                 }
-                Logger.Log("4");
                 yield break;
             }
-            Logger.Log("5");
             TranslationHelper.SendMessageTranslation(player.CSteamID, key, placeholder);
-            Logger.Log("6");
             Cooldowns.Add(player.CSteamID);
-            Logger.Log("7");
             yield return new WaitForSeconds(AdvancedRestrictor.Instance.Configuration.Instance.WarningMessageCooldown);
-            Logger.Log("8");
             Cooldowns.Remove(player.CSteamID);
-            Logger.Log("9");
         }
     }
 }

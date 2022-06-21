@@ -97,7 +97,7 @@ namespace AdvancedRestrictor
                     }
                 },
             };
-            DebugMode = true;
+            DebugMode = false;
         }
     }
 }
