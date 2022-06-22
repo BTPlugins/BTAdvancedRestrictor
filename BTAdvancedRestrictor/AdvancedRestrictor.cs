@@ -4,9 +4,6 @@ using System;
 using Logger = Rocket.Core.Logging.Logger;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Rocket.Unturned;
 using Rocket.Unturned.Events;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
@@ -15,6 +12,8 @@ using AdvancedRestrictor.Helpers;
 using UnityEngine;
 using System.Collections;
 using Steamworks;
+using Rocket.Core;
+using Rocket.API.Serialisation;
 
 namespace AdvancedRestrictor
 {
@@ -68,7 +67,8 @@ namespace AdvancedRestrictor
                         }
                         continue;
                     }
-                    if (player.HasPermission(Restriction.BypassPermission))
+                    RocketPermissionsGroup? group = R.Permissions.GetGroups(player, true).Where(k => k.Permissions.FirstOrDefault(p => p.Name == Restriction.BypassPermission) != null).FirstOrDefault();
+                    if (group != null)
                     {
                         if (AdvancedRestrictor.Instance.Configuration.Instance.DebugMode)
                         {
@@ -115,7 +115,8 @@ namespace AdvancedRestrictor
                         }
                         continue;
                     }
-                    if (player.HasPermission(Restriction.BypassPermission))
+                    RocketPermissionsGroup? group = R.Permissions.GetGroups(player, true).Where(k => k.Permissions.FirstOrDefault(p => p.Name == Restriction.BypassPermission) != null).FirstOrDefault();
+                    if (group != null)
                     {
                         if (AdvancedRestrictor.Instance.Configuration.Instance.DebugMode)
                         {
@@ -126,8 +127,8 @@ namespace AdvancedRestrictor
                         break;
                     }
                     shouldAllow = false;
-                    string itemName = Assets.find(EAssetType.ITEM, vehicle.id)?.FriendlyName;
-                    StartCoroutine(sendRestrictionMessage(player, "EnterVehicle", itemName, Restriction.BypassPermission));
+                    string vehicleName = Assets.find(EAssetType.VEHICLE, vehicle.id)?.FriendlyName;
+                    StartCoroutine(sendRestrictionMessage(player, "EnterVehicle", vehicleName, Restriction.BypassPermission));
                     if (AdvancedRestrictor.Instance.Configuration.Instance.DebugMode)
                     {
                         Logger.Log("DEBUG >> Vehicle Enter Prevented " + vehicle.name + " from " + player.CharacterName + "!");
@@ -171,7 +172,8 @@ namespace AdvancedRestrictor
                         }
                         continue;
                     }
-                    if (player.HasPermission(Restriction.BypassPermission))
+                    RocketPermissionsGroup? group = R.Permissions.GetGroups(player, true).Where(k => k.Permissions.FirstOrDefault(p => p.Name == Restriction.BypassPermission) != null).FirstOrDefault();
+                    if (group != null)
                     {
                         if (AdvancedRestrictor.Instance.Configuration.Instance.DebugMode)
                         {
@@ -203,7 +205,7 @@ namespace AdvancedRestrictor
             {
                 Logger.Log("DEBUG >> Item Added into Inventory");
             }
-            if (player.IsAdmin && AdvancedRestrictor.Instance.Configuration.Instance.IgnoreAdmins == false)
+            if (player.IsAdmin && AdvancedRestrictor.Instance.Configuration.Instance.IgnoreAdmins)
             {
                 return;
             }
@@ -226,7 +228,8 @@ namespace AdvancedRestrictor
                         }
                         continue;
                     }
-                    if (player.HasPermission(Restriction.BypassPermission))
+                    RocketPermissionsGroup? group = R.Permissions.GetGroups(player, true).Where(k => k.Permissions.FirstOrDefault(p => p.Name == Restriction.BypassPermission) != null).FirstOrDefault();
+                    if (group != null)
                     {
                         if (AdvancedRestrictor.Instance.Configuration.Instance.DebugMode)
                         {
@@ -236,8 +239,8 @@ namespace AdvancedRestrictor
                         break;
                     }
                     player.Inventory.removeItem((byte)inventoryGroup, inventoryIndex);
-                    string itemName = Assets.find(EAssetType.ITEM, P.item.id)?.FriendlyName;
-                    StartCoroutine(sendRestrictionMessage(player, "ItemBlacklist", itemName, Restriction.BypassPermission));
+                    string itemName = Assets.find(EAssetType.ITEM, ItemIDAdded)?.FriendlyName;
+                    StartCoroutine(sendRestrictionMessage(player, "ItemBlacklisted", itemName, Restriction.BypassPermission));
                     if (AdvancedRestrictor.Instance.Configuration.Instance.DebugMode)
                     {
                         Logger.Log("DEBUG >> Removed" + itemName + " from " + player.CharacterName + "!");
