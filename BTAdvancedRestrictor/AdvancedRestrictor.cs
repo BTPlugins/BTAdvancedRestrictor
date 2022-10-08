@@ -243,7 +243,8 @@ namespace AdvancedRestrictor
                     StartCoroutine(sendRestrictionMessage(player, "ItemBlacklisted", itemName, Restriction.BypassPermission));
                     if (AdvancedRestrictor.Instance.Configuration.Instance.DebugMode)
                     {
-                        Logger.Log("DEBUG >> Removed" + itemName + " from " + player.CharacterName + "!");
+                        Logger.Log("DEBUG >> Removed " + itemName + " from " + player.CharacterName + "!");
+                        Logger.Log("4");
                     }
                     break;
                 }
@@ -273,8 +274,10 @@ namespace AdvancedRestrictor
             yield return new WaitForSeconds(AdvancedRestrictor.Instance.Configuration.Instance.WarningMessageCooldown);
             Cooldowns.Remove(player.CSteamID);
         }
+
     }
 }
+
 
 // Restrictions
 // - Items

@@ -34,7 +34,7 @@ namespace AdvancedRestrictor
                     BypassPermission = "Logs.Bypass",
                     ItemIds = new List<ushort>()
                     {
-                        37,
+                        36,
                         39,
                     }
                 },
