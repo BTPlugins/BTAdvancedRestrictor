@@ -7,26 +7,31 @@ namespace AdvancedRestrictor
 {
     public class AdvancedRestrictorConfiguration : IRocketPluginConfiguration
     {
-        public float WarningMessageCooldown { get; set; }
         public bool IgnoreAdmins { get; set; }
-        public bool PreventPickup { get; set; }
         public bool RestrictCraftingGlobal { get; set; }
-        [XmlArrayItem(ElementName = "Restrict")]
-
+        public ItemOptions ItemOptions { get; set; }
+        //
+        [XmlArrayItem(ElementName = "Restriction")]
         public List<ItemRestrict> RestrictedItems { get; set; }
-        [XmlArrayItem(ElementName = "Restrict")] 
-
+        public VehicleOptions VehicleOptions { get; set; }
+        [XmlArrayItem(ElementName = "Restriction")]
         public List<VehicleRestrict> RestrictedVehicles { get; set; }
-        [XmlArrayItem(ElementName = "Restrict")]
-
+        [XmlArrayItem(ElementName = "Restriction")]
         public List<CraftingRestrict> RestrictedCraftings { get; set; }
+        [XmlArrayItem("Player")]
+        public List<RestrictedNames> RestrictedNames { get; set; }
+        [XmlArrayItem("Word")]
+        public List<RestrictedWords> RestrictedWords { get; set; }
         public bool DebugMode { get; set; }
         public void LoadDefaults()
         {
-            WarningMessageCooldown = 2f;
             IgnoreAdmins = false; // True - Admins Bypass | False - Admins act like players
-            PreventPickup = false;
             RestrictCraftingGlobal = false;
+            ItemOptions = new ItemOptions()
+            {
+                WarningMessageCooldown = 2f,
+                LeaveItemsOnGround = false,
+            };
             RestrictedItems = new List<ItemRestrict>()
             {
                 new ItemRestrict()
@@ -46,6 +51,12 @@ namespace AdvancedRestrictor
                         363,
                     }
                 }
+            };
+            VehicleOptions = new VehicleOptions()
+            {
+                RestrictLockpick = false,
+                RestrictTireDamage = false,
+                RestrictSiphon = false,
             };
             RestrictedVehicles = new List<VehicleRestrict>()
             {
@@ -92,6 +103,30 @@ namespace AdvancedRestrictor
                         96,
                     }
                 },
+            };
+            RestrictedNames = new List<RestrictedNames>
+            {
+                new RestrictedNames()
+                {
+                    Name = "Playit.gg",
+                    kickMessage = "Playit.gg is Prohibited in your Username",
+                },
+                new RestrictedNames()
+                {
+                    Name = "www.",
+                    kickMessage = "Website URLs not allowed",
+                },
+            };
+            RestrictedWords = new List<RestrictedWords>
+            {
+                new RestrictedWords()
+                {
+                    Name = "fuck",
+                },
+                new RestrictedWords()
+                {
+                    Name = "Teemo",
+                }
             };
             DebugMode = false;
         }

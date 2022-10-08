@@ -33,7 +33,7 @@ namespace AdvancedRestrictor.Helpers
         {
             return string.Format(DefaultTranslations[key], placeholder);
         }
-        private static TranslationList DefaultTranslations => AdvancedRestrictor.Instance.Translations.Instance;
+        private static TranslationList DefaultTranslations => AdvancedRestrictorPlugin.Instance.Translations.Instance;
         private static void SendMessage(SteamPlayer target, string message, UnityEngine.Color color, SteamPlayer sender = default)
         {
             ChatManager.serverSendMessage(message.Replace("[", "<").Replace("]", ">").Replace("{", "[").Replace("}", "]"), color, sender, target, EChatMode.SAY, null, true);

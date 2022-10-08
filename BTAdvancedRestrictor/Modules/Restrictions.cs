@@ -7,11 +7,22 @@ using System.Xml.Serialization;
 
 namespace AdvancedRestrictor.Modules
 {
+    public class ItemOptions
+    {
+        public float WarningMessageCooldown {get; set;}
+        public bool LeaveItemsOnGround { get; set; }
+    }
     public class ItemRestrict
     {
         public string BypassPermission { get; set; }
         [XmlArrayItem("ItemID")]
         public List<ushort> ItemIds { get; set; }
+    }
+    public class VehicleOptions
+    {
+        public bool RestrictLockpick { get; set; }
+        public bool RestrictTireDamage { get; set; }
+        public bool RestrictSiphon { get; set; }
     }
     public class VehicleRestrict
     {
@@ -24,5 +35,17 @@ namespace AdvancedRestrictor.Modules
         public string BypassPermission { get; set; }
         [XmlArrayItem("ItemID")]
         public List<ushort> Ids { get; set; }
+    }
+    public class RestrictedNames
+    {
+        [XmlAttribute]
+        public string Name { get; set; }
+        [XmlAttribute]
+        public string kickMessage { get; set; }
+    }
+    public class RestrictedWords
+    {
+        [XmlAttribute]
+        public string Name { get; set; }
     }
 }

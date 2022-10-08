@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AdvancedRestrictor
 {
-    public partial class AdvancedRestrictor
+    public partial class AdvancedRestrictorPlugin
     {
         public override TranslationList DefaultTranslations => new TranslationList
         {
@@ -28,6 +28,18 @@ namespace AdvancedRestrictor
             },
             {
                 "CraftingBlacklist", "[color=#FF0000]{{BTRestrictor}} [/color][color=#3E65FF]{0} Crafting Restriction![/color][color=#F3F3F3] Missing Permission: [/color][color=#3E65FF] {1}[/color]"
+            },
+            {
+                "LockpickPrevented", "[color=#FF0000]{{BTRestrictor}} [/color][color=#F3F3F3]Unable to Lockpick Vehicles[/color]"
+            },
+            {
+                "TireDamagePrevented", "[color=#FF0000]{{BTRestrictor}} [/color][color=#F3F3F3]Unable to Damage tires[/color]"
+            },
+            {
+                "SiphonRestricted", "[color=#FF0000]{{BTRestrictor}} [/color][color=#F3F3F3]Unable to Siphon Gas out of Vehicles[/color]"
+            },
+            {
+                "MessageRestricted", "[color=#FF0000]{{BTRestrictor}} [/color][color=#F3F3F3]Blacklisted Word[/color] [color=#3E65FF]{0}[/color][color=#F3F3F3]! Message Restricted![/color]"
             }
         };
     }
