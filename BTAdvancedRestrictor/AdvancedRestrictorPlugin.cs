@@ -48,11 +48,12 @@ namespace AdvancedRestrictor
             if (player == null) return;
             foreach(var blacklistedWord in Instance.Configuration.Instance.RestrictedWords)
             {
-                if (message.Contains(blacklistedWord.Name))
+                if (message.ToLower().Contains(blacklistedWord.Name.ToLower()))
                 {
                     DebugManager.SendDebugMessage("Restricted Word: " + blacklistedWord.Name + " From " + player.CharacterName);
                     TranslationHelper.SendMessageTranslation(player.CSteamID, "MessageRestricted", blacklistedWord.Name);
                     cancel = true;
+                    break;
                 }
             }
         }
@@ -69,6 +70,12 @@ namespace AdvancedRestrictor
         }
         private void OnPlayerConnected(UnturnedPlayer player)
         {
+            if (player.CharacterName.Contains("<#") && Instance.Configuration.Instance.FakeColoredNames.RestrictFakeColoredNames)
+            {
+                DebugManager.SendDebugMessage(player.CharacterName + " Contains <#HexCode> in their Name. Kicking");
+                player.Kick(Instance.Configuration.Instance.FakeColoredNames.KickMessage);
+                return;
+            }
             foreach(var blacklistedName in Instance.Configuration.Instance.RestrictedNames)
             {
                 DebugManager.SendDebugMessage("Checking " + blacklistedName.Name + " for " + player.CharacterName);

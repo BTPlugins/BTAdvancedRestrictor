@@ -40,7 +40,7 @@ namespace AdvancedRestrictor
             },
             {
                 "MessageRestricted", "[color=#FF0000]{{BTRestrictor}} [/color][color=#F3F3F3]Blacklisted Word[/color] [color=#3E65FF]{0}[/color][color=#F3F3F3]! Message Restricted![/color]"
-            }
+            },
         };
     }
 }

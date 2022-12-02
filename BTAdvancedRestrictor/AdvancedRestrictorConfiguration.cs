@@ -22,6 +22,7 @@ namespace AdvancedRestrictor
         public List<RestrictedNames> RestrictedNames { get; set; }
         [XmlArrayItem("Word")]
         public List<RestrictedWords> RestrictedWords { get; set; }
+        public FakeColoredNames FakeColoredNames;
         public bool DebugMode { get; set; }
         public void LoadDefaults()
         {
@@ -127,6 +128,11 @@ namespace AdvancedRestrictor
                 {
                     Name = "Teemo",
                 }
+            };
+            FakeColoredNames = new FakeColoredNames()
+            {
+                RestrictFakeColoredNames = true,
+                KickMessage = "Remove <#HexCode> from your Username to re-join",
             };
             DebugMode = false;
         }

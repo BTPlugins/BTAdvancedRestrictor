@@ -48,4 +48,9 @@ namespace AdvancedRestrictor.Modules
         [XmlAttribute]
         public string Name { get; set; }
     }
+    public class FakeColoredNames
+    {
+        public bool RestrictFakeColoredNames { get; set; }
+        public string KickMessage { get; set; }
+    }
 }
