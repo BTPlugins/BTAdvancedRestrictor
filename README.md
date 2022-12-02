@@ -5,8 +5,11 @@ All the Server Restrictions you need in one Plugin!
 - Item Restrictions
 - Prevent Pickup ( Item Restrictions however the Item stays on the ground )
 - Vehicle Restrictions
+- Vehicle Options
 - Crafting Restrictions
 - Disable Crafting Globally
+- Username Restrictions
+- Chat Blacklist
 - User Friendly Configuration
 
 # Configuration
