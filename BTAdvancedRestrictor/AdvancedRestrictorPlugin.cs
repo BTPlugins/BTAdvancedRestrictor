@@ -67,6 +67,7 @@ namespace AdvancedRestrictor
                 DebugManager.SendDebugMessage(player.CharacterName + " Attempted to Siphon Gas out of " + vehicle.lockedOwner + " Vehicle. Siphon Restricted");
                 shouldAllow = false;
             }
+            shouldAllow = true;
         }
         private void OnPlayerConnected(UnturnedPlayer player)
         {
@@ -96,7 +97,9 @@ namespace AdvancedRestrictor
                 DebugManager.SendDebugMessage("Restricted Lockpick");
                 TranslationHelper.SendMessageTranslation(player.CSteamID, "LockpickPrevented");
                 allow = false;
+                return;
             }
+            allow = true;
         }
 
         private void onDamageTireRequested(CSteamID instigatorSteamID, InteractableVehicle vehicle, int tireIndex, ref bool shouldAllow, EDamageOrigin damageOrigin)
