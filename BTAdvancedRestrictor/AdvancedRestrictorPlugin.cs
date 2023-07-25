@@ -45,7 +45,8 @@ namespace AdvancedRestrictor
 
         private void OnPlayerChatted(UnturnedPlayer player, ref Color color, string message, EChatMode chatMode, ref bool cancel)
         {
-            if (player == null) return;
+            if (message.StartsWith("/")) return;
+            bool cancelMessage = false;
             foreach(var blacklistedWord in Instance.Configuration.Instance.RestrictedWords)
             {
                 if (message.ToLower().Contains(blacklistedWord.Name.ToLower()))
@@ -53,9 +54,12 @@ namespace AdvancedRestrictor
                     DebugManager.SendDebugMessage("Restricted Word: " + blacklistedWord.Name + " From " + player.CharacterName);
                     TranslationHelper.SendMessageTranslation(player.CSteamID, "MessageRestricted", blacklistedWord.Name);
                     cancel = true;
+                    cancelMessage = true;
                     break;
                 }
             }
+            if (cancelMessage) return;
+            cancel = false;
         }
 
         private void onSiphonVehicleRequested(InteractableVehicle vehicle, Player instigatingPlayer, ref bool shouldAllow, ref ushort desiredAmount)
@@ -66,6 +70,7 @@ namespace AdvancedRestrictor
                 TranslationHelper.SendMessageTranslation(player.CSteamID, "SiphonRestricted");
                 DebugManager.SendDebugMessage(player.CharacterName + " Attempted to Siphon Gas out of " + vehicle.lockedOwner + " Vehicle. Siphon Restricted");
                 shouldAllow = false;
+                return;
             }
             shouldAllow = true;
         }
