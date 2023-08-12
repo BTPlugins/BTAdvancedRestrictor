@@ -16,6 +16,7 @@ using Rocket.Core;
 using Rocket.API.Serialisation;
 using BTAdvancedRestrictor.Helpers;
 using Rocket.Unturned;
+using static Rocket.Unturned.Events.UnturnedPlayerEvents;
 
 namespace AdvancedRestrictor
 {
@@ -41,9 +42,9 @@ namespace AdvancedRestrictor
             U.Events.OnPlayerConnected += OnPlayerConnected;
             VehicleManager.onSiphonVehicleRequested += onSiphonVehicleRequested;
             UnturnedPlayerEvents.OnPlayerChatted += OnPlayerChatted;
+            UnturnedPlayerEvents.OnPlayerWear += OnPlayerWear;
         }
-
-        private void OnPlayerChatted(UnturnedPlayer player, ref Color color, string message, EChatMode chatMode, ref bool cancel)
+            private void OnPlayerChatted(UnturnedPlayer player, ref Color color, string message, EChatMode chatMode, ref bool cancel)
         {
             if (message.StartsWith("/")) return;
             bool cancelMessage = false;
@@ -95,7 +96,10 @@ namespace AdvancedRestrictor
         }
         private void onVehicleLockpicked(InteractableVehicle vehicle, Player instigatingPlayer, ref bool allow)
         {
+            DebugManager.SendDebugMessage("VehicleLockpick Event Triggerd");
+            if (vehicle == null) return;
             var player = UnturnedPlayer.FromPlayer(instigatingPlayer);
+            if (player == null) return;
             DebugManager.SendDebugMessage(player.CharacterName + " is lock picking a vehicle");
             if (Instance.Configuration.Instance.VehicleOptions.RestrictLockpick)
             {
@@ -227,7 +231,71 @@ namespace AdvancedRestrictor
                 }
             }
         }
-
+        private void OnPlayerWear(UnturnedPlayer player, UnturnedPlayerEvents.Wearables wear, ushort id, byte? quality)
+        {
+            if (AdvancedRestrictorPlugin.Instance.Configuration.Instance.ItemOptions.LeaveItemsOnGround) return;
+            DebugManager.SendDebugMessage("Item Added into Inventory");
+            if (player.IsAdmin && AdvancedRestrictorPlugin.Instance.Configuration.Instance.IgnoreAdmins) return;
+            foreach(var restriction in AdvancedRestrictorPlugin.Instance.Configuration.Instance.RestrictedItems)
+            {
+                var Items = restriction.ItemIds;
+                foreach (var Item in Items)
+                {
+                    if (id != Item)
+                    {
+                        DebugManager.SendDebugMessage(id + " is not found in " + player.CharacterName + " inventory. Skipping!");
+                        continue;
+                    }
+                    RocketPermissionsGroup? group = R.Permissions.GetGroups(player, true).Where(k => k.Permissions.FirstOrDefault(p => p.Name == restriction.BypassPermission) != null).FirstOrDefault();
+                    if (group != null)
+                    {
+                        DebugManager.SendDebugMessage(player.CharacterName + " has Bypass Permission for " + id + "!");
+                        // They have Bypass Perm
+                        break;
+                    }
+                    switch (wear)
+                    {
+                        case UnturnedPlayerEvents.Wearables.Backpack:
+                            StartCoroutine(InvokeOnNextFrame(() =>
+                            player.Player.clothing.askWearBackpack(0, 0, new byte[0], true)));
+                            break;
+                        case UnturnedPlayerEvents.Wearables.Glasses:
+                            StartCoroutine(InvokeOnNextFrame(() =>
+                            player.Player.clothing.askWearGlasses(0, 0, new byte[0], true)));
+                            break;
+                        case UnturnedPlayerEvents.Wearables.Hat:
+                            StartCoroutine(InvokeOnNextFrame(() =>
+                            player.Player.clothing.askWearHat(0, 0, new byte[0], true)));
+                            break;
+                        case UnturnedPlayerEvents.Wearables.Mask:
+                            StartCoroutine(InvokeOnNextFrame(() =>
+                            player.Player.clothing.askWearMask(0, 0, new byte[0], true)));
+                            break;
+                        case UnturnedPlayerEvents.Wearables.Pants:
+                            StartCoroutine(InvokeOnNextFrame(() =>
+                            player.Player.clothing.askWearPants(0, 0, new byte[0], true)));
+                            break;
+                        case UnturnedPlayerEvents.Wearables.Shirt:
+                            StartCoroutine(InvokeOnNextFrame(() =>
+                            player.Player.clothing.askWearShirt(0, 0, new byte[0], true)));
+                            break;
+                        case UnturnedPlayerEvents.Wearables.Vest:
+                            StartCoroutine(InvokeOnNextFrame(() =>
+                            player.Player.clothing.askWearVest(0, 0, new byte[0], true)));
+                            break;
+                    }
+                    string itemName = Assets.find(EAssetType.ITEM, id)?.FriendlyName;
+                    StartCoroutine(sendRestrictionMessage(player, "ItemBlacklisted", itemName, restriction.BypassPermission));
+                    DebugManager.SendDebugMessage("Removed " + itemName + " from " + player.CharacterName + "!");
+                    break;
+                }
+            }
+        }
+        private IEnumerator InvokeOnNextFrame(System.Action action)
+        {
+            yield return new WaitForFixedUpdate();
+            action();
+        }
         private void OnPlayerInventoryAdded(UnturnedPlayer player, InventoryGroup inventoryGroup, byte inventoryIndex, ItemJar P)
         {
             if (AdvancedRestrictorPlugin.Instance.Configuration.Instance.ItemOptions.LeaveItemsOnGround) return;
