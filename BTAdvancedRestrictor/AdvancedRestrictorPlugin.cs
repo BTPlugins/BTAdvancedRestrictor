@@ -98,7 +98,10 @@ namespace AdvancedRestrictor
         {
             DebugManager.SendDebugMessage("VehicleLockpick Event Triggerd");
             if (vehicle == null) return;
+            DebugManager.SendDebugMessage("VehicleLockpick - Checking if Instiagiator is null");
+            if (instigatingPlayer == null) return;
             var player = UnturnedPlayer.FromPlayer(instigatingPlayer);
+            DebugManager.SendDebugMessage("VehicleLockPick - Checking if player is null");
             if (player == null) return;
             DebugManager.SendDebugMessage(player.CharacterName + " is lock picking a vehicle");
             if (Instance.Configuration.Instance.VehicleOptions.RestrictLockpick)
