@@ -39,6 +39,10 @@
     <Compile Include="AdvancedRestrictorPlugin.cs" />
     <Compile Include="Modules\Restrictions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Restrictions\ItemRestrictions.cs" />
+    <Compile Include="Restrictions\MiscRestrictions.cs" />
+    <Compile Include="Restrictions\VehicleRestrictions.cs" />
+    <Compile Include="Restrictions\WordRestrictions.cs" />
     <Compile Include="Translations.cs" />
   </ItemGroup>
   <ItemGroup />

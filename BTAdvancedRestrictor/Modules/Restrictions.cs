@@ -9,7 +9,7 @@ namespace AdvancedRestrictor.Modules
 {
     public class ItemOptions
     {
-        public float WarningMessageCooldown {get; set;}
+        public float WarningMessageCooldown { get; set; }
         public bool LeaveItemsOnGround { get; set; }
     }
     public class ItemRestrict
@@ -52,5 +52,16 @@ namespace AdvancedRestrictor.Modules
     {
         public bool RestrictFakeColoredNames { get; set; }
         public string KickMessage { get; set; }
+    }
+    public class CosmeticRestrictions
+    {
+        public bool RestrictItemCosmetic { get; set; }
+        public bool RestrictHatCosmetic { get; set; }
+        public bool RestrictMaskCosmetic { get; set; }
+        public bool RestrictGlassesCosmetic { get; set; }
+        public bool RestrictShirtCosmetic { get; set; }
+        public bool RestrictVestCosmetic { get; set; }
+        public bool RestrictBackpackCosmetic { get; set; }
+        public bool RestrictPantsCosmetic { get; set; }
     }
 }
