@@ -10,6 +10,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Rocket.Unturned;
+using static Rocket.Unturned.Events.UnturnedEvents;
+using System.Reflection;
+using UnityEngine;
+using Logger = Rocket.Core.Logging.Logger;
 
 namespace BTAdvancedRestrictor.Restrictions
 {
@@ -18,10 +23,26 @@ namespace BTAdvancedRestrictor.Restrictions
         public void Init()
         {
             PlayerCrafting.onCraftBlueprintRequested += onCraftBlueprintRequested;
+            U.Events.OnPlayerConnected += OnPlayerConnected;
         }
+
+        private void OnPlayerConnected(UnturnedPlayer player)
+        {
+            foreach(SteamPending pend in Provider.pending)
+            {
+
+                var steamPendingType = typeof(SteamPending);
+                var bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+
+                var skinColorField = steamPendingType.GetField("_skin", bindingFlags);
+                skinColorField.SetValue(pend, new Color(46,29,20));
+            }
+        }
+
         public void Destroy()
         {
             PlayerCrafting.onCraftBlueprintRequested -= onCraftBlueprintRequested;
+            U.Events.OnPlayerConnected -= OnPlayerConnected;
         }
 
         private void onCraftBlueprintRequested(PlayerCrafting crafting, ref ushort itemID, ref byte blueprintIndex, ref bool shouldAllow)
