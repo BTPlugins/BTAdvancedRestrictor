@@ -17,6 +17,7 @@ using Rocket.API.Serialisation;
 using BTAdvancedRestrictor.Helpers;
 using Rocket.Unturned;
 using static Rocket.Unturned.Events.UnturnedPlayerEvents;
+using HarmonyLib;
 
 namespace AdvancedRestrictor
 {
@@ -33,6 +34,10 @@ namespace AdvancedRestrictor
             Logger.Log("###            Join my Discord:           ###", ConsoleColor.Yellow);
             Logger.Log("###     https://discord.gg/YsaXwBSTSm     ###", ConsoleColor.Yellow);
             Logger.Log("#############################################", ConsoleColor.Yellow);
+
+            var harmony = new Harmony("BTAdvancedRestrictions");
+            harmony.PatchAll();
+
             UnturnedPlayerEvents.OnPlayerInventoryAdded += OnPlayerInventoryAdded;
             ItemManager.onTakeItemRequested += onTakeItemRequested;
             VehicleManager.onEnterVehicleRequested += onEnterVehicleRequested;
@@ -47,6 +52,7 @@ namespace AdvancedRestrictor
             private void OnPlayerChatted(UnturnedPlayer player, ref Color color, string message, EChatMode chatMode, ref bool cancel)
         {
             if (message.StartsWith("/")) return;
+            if (cancel) return;
             bool cancelMessage = false;
             foreach(var blacklistedWord in Instance.Configuration.Instance.RestrictedWords)
             {
@@ -65,6 +71,7 @@ namespace AdvancedRestrictor
 
         private void onSiphonVehicleRequested(InteractableVehicle vehicle, Player instigatingPlayer, ref bool shouldAllow, ref ushort desiredAmount)
         {
+            if (!shouldAllow) return;
             var player = UnturnedPlayer.FromPlayer(instigatingPlayer);
             if (Instance.Configuration.Instance.VehicleOptions.RestrictSiphon && vehicle.isLocked && vehicle.lockedOwner != player.CSteamID)
             {
@@ -96,6 +103,7 @@ namespace AdvancedRestrictor
         }
         private void onVehicleLockpicked(InteractableVehicle vehicle, Player instigatingPlayer, ref bool allow)
         {
+            if (!allow) return;
             DebugManager.SendDebugMessage("VehicleLockpick Event Triggerd");
             if (vehicle == null) return;
             DebugManager.SendDebugMessage("VehicleLockpick - Checking if Instiagiator is null");
@@ -116,6 +124,7 @@ namespace AdvancedRestrictor
 
         private void onDamageTireRequested(CSteamID instigatorSteamID, InteractableVehicle vehicle, int tireIndex, ref bool shouldAllow, EDamageOrigin damageOrigin)
         {
+            if (!shouldAllow) return;
             var player = UnturnedPlayer.FromCSteamID(instigatorSteamID);
             DebugManager.SendDebugMessage(player.CharacterName + " Has damaged a vehicle tire");
             if (Instance.Configuration.Instance.VehicleOptions.RestrictTireDamage)
@@ -129,6 +138,8 @@ namespace AdvancedRestrictor
 
         private void onCraftBlueprintRequested(PlayerCrafting crafting, ref ushort itemID, ref byte blueprintIndex, ref bool shouldAllow)
         {
+            if (!shouldAllow) return;
+            bool shouldBreak = false;
             UnturnedPlayer player = UnturnedPlayer.FromPlayer(crafting.player);
             if (player.IsAdmin && AdvancedRestrictorPlugin.Instance.Configuration.Instance.IgnoreAdmins) return;
             if (AdvancedRestrictorPlugin.Instance.Configuration.Instance.RestrictCraftingGlobal)
@@ -140,6 +151,7 @@ namespace AdvancedRestrictor
             var CraftingRestrictions = AdvancedRestrictorPlugin.Instance.Configuration.Instance.RestrictedCraftings;
             foreach (var Restriction in CraftingRestrictions)
             {
+                if(shouldBreak) break;
                 DebugManager.SendDebugMessage("Looking at: " + Restriction.BypassPermission);
                 var CraftingIds = Restriction.Ids;
                 foreach (var singleID in CraftingIds)
@@ -157,10 +169,12 @@ namespace AdvancedRestrictor
                         // They have Bypass Perm
                         break;
                     }
-                    shouldAllow = false;
                     string itemName = Assets.find(EAssetType.ITEM, itemID)?.FriendlyName;
                     StartCoroutine(sendRestrictionMessage(player, "CraftingBlacklist", itemName, Restriction.BypassPermission));
                     DebugManager.SendDebugMessage("Crafting Prevented " + itemName + " from " + player.CharacterName + "!");
+
+                    shouldAllow = false;
+                    shouldBreak = true;
                     break;
                 }
             }
@@ -168,6 +182,7 @@ namespace AdvancedRestrictor
 
         private void onEnterVehicleRequested(Player user, InteractableVehicle vehicle, ref bool shouldAllow)
         {
+            if (!shouldAllow) return;
             UnturnedPlayer player = UnturnedPlayer.FromPlayer(user);
             if (player.IsAdmin && AdvancedRestrictorPlugin.Instance.Configuration.Instance.IgnoreAdmins) return;
             var VehicleRestrictions = AdvancedRestrictorPlugin.Instance.Configuration.Instance.RestrictedVehicles;
@@ -201,6 +216,7 @@ namespace AdvancedRestrictor
 
         private void onTakeItemRequested(Player user, byte x, byte y, uint instanceID, byte to_x, byte to_y, byte to_rot, byte to_page, ItemData itemData, ref bool shouldAllow)
         {
+            if (!shouldAllow) return;
             UnturnedPlayer player = UnturnedPlayer.FromPlayer(user);
             if (!AdvancedRestrictorPlugin.Instance.Configuration.Instance.ItemOptions.LeaveItemsOnGround) return;
             DebugManager.SendDebugMessage("Pickup Requested");
@@ -335,10 +351,19 @@ namespace AdvancedRestrictor
 
         protected override void Unload()
         {
+            Instance = null;
+
             UnturnedPlayerEvents.OnPlayerInventoryAdded -= OnPlayerInventoryAdded;
             ItemManager.onTakeItemRequested -= onTakeItemRequested;
             VehicleManager.onEnterVehicleRequested -= onEnterVehicleRequested;
             PlayerCrafting.onCraftBlueprintRequested -= onCraftBlueprintRequested;
+            VehicleManager.onDamageTireRequested -= onDamageTireRequested;
+            VehicleManager.onVehicleLockpicked -= onVehicleLockpicked;
+            U.Events.OnPlayerConnected -= OnPlayerConnected;
+            VehicleManager.onSiphonVehicleRequested -= onSiphonVehicleRequested;
+            UnturnedPlayerEvents.OnPlayerChatted -= OnPlayerChatted;
+            UnturnedPlayerEvents.OnPlayerWear -= OnPlayerWear;
+            base.Unload();
             Logger.Log("BTAdvancedRestrictions Unloaded :) ");
         }
         public IEnumerator sendRestrictionMessage(UnturnedPlayer player, string key, params object[] placeholder)
