@@ -37,8 +37,14 @@ namespace BTAdvancedRestrictor.Patches
                 return true;
 
             var index = storage.items.getIndex(x_0, y_0);
-
             var item = storage.items.getItem(index);
+
+            if (item == null)
+            {
+                DebugManager.SendDebugMessage("Item not found... At Index: " + index);
+                return true;
+            }
+
             DebugManager.SendDebugMessage("Item: " + item.item.id);
 
             var Restrictions = AdvancedRestrictorPlugin.Instance.Configuration.Instance.RestrictedItems;
